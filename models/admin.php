@@ -171,8 +171,7 @@ class entreprise
         }
     }
 
-    public static function addPhoto(int $Entreprise_ID, string $photo)
-    {
+    public static function addPhoto(int $Entreprise_ID, string $photo){
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -191,8 +190,7 @@ class entreprise
         }
     }
 
-    public static function deleteAccount(int $Entreprise_ID)
-    {
+    public static function deleteAccount(int $Entreprise_ID){
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -210,7 +208,34 @@ class entreprise
         }
     }
 
+    public static function checkSiretExists(string $siret)
+    {
+        // le try and catch permet de gérer les erreurs, nous allons l'utiliser pour gérer les erreurs liées à la base de données
+        try {
+            // Création d'un objet $db selon la classe PDO
+            $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
 
+            // stockage de ma requete dans une variable
+            $sql = "SELECT `Entreprise_siret` FROM `entreprise` WHERE `Entreprise_siret` = :Entreprise_siret";
+
+            // je prepare ma requête pour éviter les injections SQL
+            $query = $db->prepare($sql);
+
+            // on relie les paramètres à nos marqueurs nominatifs à l'aide d'un bindValue
+            $query->bindValue(':Entreprise_siret', $siret, PDO::PARAM_STR);
+
+            // on execute la requête
+            $query->execute();
+
+            // on récupère le résultat de la requête dans une variable
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+
+            return $result;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            die();
+        }
+    }
 
 }
 
@@ -366,6 +391,8 @@ class utilisateurs{
             return false;
         }
     }
+    
+
 }
 
 

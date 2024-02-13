@@ -20,7 +20,6 @@ $actifsUsers = utilisateurs::countActifsUsers($Entreprise_ID);
 $totalTrajets = utilisateurs::countTotalTrajets($Entreprise_ID);
 $lastFiveUsers = utilisateurs::lastFiveUsers($Entreprise_ID);
 $lastFiveTrajets = utilisateurs::lastFiveTrajets($Entreprise_ID);
-var_dump($lastFiveTrajets);
 }
 
 include_once '../views/view-home.php';

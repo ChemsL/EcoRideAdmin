@@ -4,9 +4,7 @@ require_once '../config.php';
 require_once '../models/admin.php';
 
 $showform = true;
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     $nom = $_POST["nom"];
     $siret = $_POST["siret"];
     $codePostal = $_POST["codePostal"];
@@ -14,11 +12,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ville = $_POST["ville"];
     $email = $_POST["email"];
     $motDePasse = $_POST["motDePasse"];
+    $checkSiret = entreprise::checkSiretExists($siret);
 
+    var_dump($checkSiret);
     $motDePasse = $_POST["motDePasse"];
+    
     $cguChecked = isset($_POST["cgu"]) && $_POST["cgu"] === "on";
-
     $erreurs = array();
+
+
 
     if (empty($nom) || !preg_match("/^[a-zA-Z0-9\s]+$/", $nom)) {
         $erreurs[] = '<i class="bi bi-exclamation-triangle-fill"></i>' . "Merci de renseigner le nom de l'entreprise.";
@@ -26,6 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($siret) || !preg_match("/^\d{14}$/", $siret)) {
         $erreurs[] = '<i class="bi bi-exclamation-triangle-fill"></i>' . "Merci de renseigner un numéro de SIRET valide composé de 14 chiffres.";
+    } else {
+        if (entreprise::checkSiretExists($siret)) {
+
+            echo "Cet n° de siret est déjà utilisé. Veuillez choisir un autre n° de siret ou vous connecter si vous avez déjà un compte.";
+        } 
     }
 
     if (empty($codePostal) || !preg_match("/^\d{5}$/", $codePostal)) {
@@ -53,7 +60,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$cguChecked) {
         $erreurs[] = '<i class="bi bi-exclamation-triangle-fill"></i>' . "Veuillez accepter les CGU pour continuer.";
     }
-var_dump($erreurs);
+
+    // Vérification de l'existence de l'e-mail dans la base de données
+    if (entreprise::checkMailExists($email)) {
+
+        echo "Cet e-mail est déjà utilisé. Veuillez choisir un autre e-mail ou vous connecter si vous avez déjà un compte.";
+    }
+
+    
+    // var_dump($erreurs);
     if (empty($erreurs)) {
 
         $nom = $_POST["nom"];
@@ -67,10 +82,9 @@ var_dump($erreurs);
         entreprise::create($nom, $siret, $codePostal, $adresse, $ville, $email, $motDePasse);
         $showform = false;
 
-         header("Location: controller-signin.php");
+        header("Location: controller-signin.php");
     }
 }
-
 
 
 ?>

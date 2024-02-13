@@ -78,7 +78,7 @@
                             <?php foreach ($lastFiveUsers as $user): ?>
                                 <div class="col s12 m6 l4">
                                     <div class="card-panel">
-                                        <img src="http:/EcoRideUsers/assets/img/<?= $user['User_Photo']; ?>"
+                                        <img src="http://EcoRideUsers.test/assets/img/<?= $user['User_Photo']; ?>"
                                             alt="Photo de profil">
                                         <p>Pseudo :
                                             <?= $user['User_Pseudo']; ?>
@@ -116,3 +116,10 @@
                             <?php endforeach; ?>
 
                         </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="../controllers/controller-deconnexion.php" class="waves-effect waves-light btn-large">Se déconnecter</a>
+    </div>

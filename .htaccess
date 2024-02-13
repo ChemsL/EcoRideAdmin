@@ -1,0 +1,4 @@
+options -Indexes
+
+ErrorDocument 403 http://ecorideadmin.test/custom403.html
+ErrorDocument 404 http://ecorideadmin.test/custom404.html
