@@ -18,13 +18,7 @@ elseif (isset($_SESSION['entreprise'])) {
     $Entreprise_ID = $_SESSION['entreprise']['Entreprise_ID'];
     
     
-$usersNumber = json_decode(utilisateurs::countUsers($Entreprise_ID), true);
-$actifsUsers = utilisateurs::countActifsUsers($Entreprise_ID);
-$totalTrajets = utilisateurs::countTotalTrajets($Entreprise_ID);
-$lastFiveUsers = utilisateurs::lastFiveUsers($Entreprise_ID);
-$lastFiveTrajets = utilisateurs::lastFiveTrajets($Entreprise_ID);
-$trajetsPourcentages = trajets::trajetsPourcentages($Entreprise_ID);
-
+    $entrepriseUsers = utilisateurs::entrepriseUsers($Entreprise_ID);
 }
 
-include_once '../views/view-home.php';
+include_once '../views/view-utilisateurs.php';

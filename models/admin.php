@@ -146,7 +146,7 @@ class entreprise
             return false;
         }
     }
-    public static function updateProfile(int $Entreprise_ID, string $nom,string $siret, string $codePostal, string $adresse, string $ville, string $photo)
+    public static function updateProfile(int $Entreprise_ID, string $nom, string $siret, string $codePostal, string $adresse, string $ville, string $photo)
     {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
@@ -171,7 +171,8 @@ class entreprise
         }
     }
 
-    public static function addPhoto(int $Entreprise_ID, string $photo){
+    public static function addPhoto(int $Entreprise_ID, string $photo)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -190,7 +191,8 @@ class entreprise
         }
     }
 
-    public static function deleteAccount(int $Entreprise_ID){
+    public static function deleteAccount(int $Entreprise_ID)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -239,9 +241,11 @@ class entreprise
 
 }
 
-class utilisateurs{
+class utilisateurs
+{
 
-    public static function countUsers(int $Entreprise_ID){
+    public static function countUsers(int $Entreprise_ID)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -256,39 +260,43 @@ class utilisateurs{
             // Récupération du résultat
             $result = $requete->fetch(PDO::FETCH_ASSOC);
 
+            $json_result= json_encode($result['user_count']);
+
             // Retourner le résultat
-            return $result['user_count'];
+            return $json_result;
 
         } catch (PDOException $e) {
             die("Erreur de connexion à la base de données ou erreur d'insertion : " . $e->getMessage());
         }
     }
 
-    public static function countActifsUsers(int $Entreprise_ID){
+    public static function countActifsUsers(int $Entreprise_ID)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+
             // Préparation de la requête SQL
             $requete = $connexion->prepare("SELECT COUNT(DISTINCT utilisateur.User_ID) AS user_count FROM utilisateur INNER JOIN trajet ON utilisateur.User_ID = trajet.User_ID WHERE utilisateur.Entreprise_ID = :Entreprise_ID");
             $requete->bindValue(':Entreprise_ID', $Entreprise_ID, PDO::PARAM_INT);
-    
+
             // Exécution de la requête
             $requete->execute();
-    
+
             // Récupération du résultat
             $result = $requete->fetch(PDO::FETCH_ASSOC);
-    
+
             // Retourner le résultat
             return $result['user_count'];
-    
+
         } catch (PDOException $e) {
             die("Erreur de connexion à la base de données ou erreur d'insertion : " . $e->getMessage());
         }
     }
-    
 
-    public static function countTotalTrajets(int $Entreprise_ID){
+
+    public static function countTotalTrajets(int $Entreprise_ID)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -311,7 +319,8 @@ class utilisateurs{
             die("Erreur de connexion à la base de données ou erreur d'insertion : " . $e->getMessage());
         }
     }
-    public static function lastFiveUsers(int $Entreprise_ID){
+    public static function lastFiveUsers(int $Entreprise_ID)
+    {
         try {
             // Création d'un objet $db selon la classe PDO
             $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
@@ -343,15 +352,18 @@ class utilisateurs{
             return false;
         }
     }
-    public static function lastFiveTrajets(int $Entreprise_ID){
+
+    public static function entrepriseUsers(int $Entreprise_ID)
+    {
         try {
             // Création d'un objet $db selon la classe PDO
             $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
 
             // stockage de ma requete dans une variable
-            $sql = "SELECT Trajet_DistanceParcourue_KM_ ,Trajet_Date, Trajet_Temps , TansportType_ID 
-        FROM trajet 
-        INNER JOIN utilisateur ON utilisateur.User_ID = trajet.User_ID WHERE Entreprise_ID = :Entreprise_ID";
+            $sql = "SELECT User_Pseudo, User_Photo  
+        FROM utilisateur 
+        WHERE Entreprise_ID = :Entreprise_ID 
+        ORDER BY User_ID DESC ";
 
             // je prepare ma requête pour éviter les injections SQL
             $query = $db->prepare($sql);
@@ -373,7 +385,44 @@ class utilisateurs{
             return false;
         }
     }
-    public static function getUserPhoto(int $User_ID, string $photoUser){
+
+    public static function lastFiveTrajets(int $Entreprise_ID)
+    {
+        try {
+            // Création d'un objet $db selon la classe PDO
+            $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
+
+            // stockage de ma requete dans une variable
+            $sql = "SELECT trajet.Trajet_DistanceParcourue_KM_, trajet.Trajet_Date, trajet.Trajet_Temps, transporttype.TransportType_Name
+            FROM trajet 
+            INNER JOIN transporttype ON trajet.TansportType_ID = transporttype.TansportType_ID
+            INNER JOIN utilisateur ON utilisateur.User_ID = trajet.User_ID
+            WHERE utilisateur.Entreprise_ID = :Entreprise_ID
+            ORDER BY trajet.Trajet_Date DESC
+            LIMIT 5";
+
+            // je prepare ma requête pour éviter les injections SQL
+            $query = $db->prepare($sql);
+
+            // on relie les paramètres à nos marqueurs nominatifs à l'aide d'un bindValue
+            $query->bindValue(':Entreprise_ID', $Entreprise_ID, PDO::PARAM_INT);
+
+
+            // on execute la requête
+            $query->execute();
+
+            // on récupère le résultat de la requête dans une variable
+            $result = $query->fetchALL(PDO::FETCH_ASSOC);
+
+            // on retourne le résultat
+            return $result;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            return false;
+        }
+    }
+    public static function getUserPhoto(int $User_ID, string $photoUser)
+    {
         try {
             $connexion = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
             $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -391,9 +440,49 @@ class utilisateurs{
             return false;
         }
     }
-    
+
 
 }
 
+class trajets
+{
+    public static function trajetsPourcentages($Entreprise_ID)
+    {
+
+        try {
+            // Création d'un objet $db selon la classe PDO
+            $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
+
+            // stockage de ma requete dans une variable
+            $sql = "SELECT transporttype.TransportType_Name AS type_transport, COUNT(trajet.TansportType_ID) AS nombre_trajets, 
+            ROUND(COUNT(trajet.TansportType_ID) * 100.0 / (SELECT COUNT(*) FROM trajet), 2) AS pourcentage
+            FROM trajet
+            INNER JOIN transporttype ON trajet.TansportType_ID = transporttype.TansportType_ID
+            NATURAL JOIN utilisateur
+            WHERE Entreprise_ID = :Entreprise_ID
+            GROUP BY trajet.TansportType_ID
+            
+            ";
+
+            // je prepare ma requête pour éviter les injections SQL
+            $query = $db->prepare($sql);
+
+            $query->bindValue(':Entreprise_ID', $Entreprise_ID, PDO::PARAM_INT);
+
+            // on execute la requête
+            $query->execute();
+
+            // on récupère le résultat de la requête dans une variable
+            $result = $query->fetchALL(PDO::FETCH_ASSOC);
+
+            // on retourne le résultat
+            return $result;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            return false;
+        }
+
+    }
+}
 
 
