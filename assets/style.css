@@ -1,5 +1,47 @@
-body {
-    background-image: url('/background.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
+/* Ajout de styles pour centrer les cartes */
+.row.justify-content-center {
+    display: flex;
+    justify-content: center;
+}
+
+/* Modification des styles du bouton switch */
+.switch label {
+    display: flex;
+    align-items: center;
+}
+
+.switch input[type="checkbox"] {
+    display: none;
+}
+
+.switch .lever {
+    background-color: #2196F3;
+}
+
+.switch label .lever:after {
+    background-color: #fff;
+}
+
+.switch label input[type="checkbox"]:checked + .lever:after {
+    background-color: #2196F3;
+}
+.col-centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-panel{
+    width: 25rem;
+    height: 15rem;
+}
+
+.card-panel > img {
+    width: 12rem;
+    height: 6rem;
+    border-radius: 100%;
+}
+
+#divCards{
+    margin-left: auto;
+    margin-right: auto;
 }

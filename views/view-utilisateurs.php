@@ -10,34 +10,61 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 
 <body>
 
-<div class="row">
-    <div class="col s12">
-        <div class="card blue lighten-2">
-            <div class="card-content black-text">
-                <span class="card-title">Utilisateurs de l'entreprise :</span>
-                <div class="row justify-content-center">
-                    <?php foreach ($entrepriseUsers as $user): ?>
-                        <div class="col s12 m6 l4">
-                            <div class="card-panel">
-                                <img src="http://EcoRideUsers.test/assets/img/<?= $user['User_Photo']; ?>"
-                                    alt="Photo de profil">
-                                <p>Pseudo :
-                                    <?= $user['User_Pseudo']; ?>
-                                </p>
+    <div class="valign-wrapper">
+        <div class="col s12">
+            <div class="card red lighten-1">
+                <div class="card-content black-text" id="divCards">
+                    <span class="card-title">Utilisateurs de l'entreprise :</span>
+                    <div class="justify-content-center align-items-center" style="height: 100%;">
+                        <?php foreach ($entrepriseUsers as $user): ?>
+                            <div class="col-centered">
+                                <div class="card-panel blue-grey lighten-5">
+                                    <img src="http://EcoRideUsers.test/assets/img/<?= $user['User_Photo']; ?>"
+                                        alt="Photo de profil">
+                                    <p class="center-align">Pseudo :
+                                        <?= $user['User_Pseudo']; ?>
+                                    </p>
+                                    <!-- Switch -->
+                                    <div class="switch">
+                                        <label>
+                                            Off
+                                            <input data-user-id="<?= $user['User_ID'] ?>" type="checkbox"
+                                                <?= $user['User_Validate'] == 1 ? "checked" : "" ?>>
+                                            <span class="lever"></span>
+                                            On
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <a href="controller-home.php">Retour à la page home</a>
                 </div>
-                <a href="controller-home.php">Retour à la page home</a>
             </div>
         </div>
     </div>
-</div>
 
-                    </body>
+
+
+</body>
+<script>
+    document.addEventListener('click', e => {
+        if (e.target.type == 'checkbox') {
+            if (e.target.checked == false) {
+                console.log('unvalidate')
+                fetch(`controller-ajax.php?unvalidate=${e.target.dataset.userId}`)
+            } else if (e.target.checked == true) {
+                console.log('validate')
+                fetch(`controller-ajax.php?validate=${e.target.dataset.userId}`)
+            }
+        }
+    })
+
+</script>
+
 </html>

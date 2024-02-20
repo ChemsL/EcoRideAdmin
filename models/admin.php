@@ -260,7 +260,7 @@ class utilisateurs
             // Récupération du résultat
             $result = $requete->fetch(PDO::FETCH_ASSOC);
 
-            $json_result= json_encode($result['user_count']);
+            $json_result = json_encode($result['user_count']);
 
             // Retourner le résultat
             return $json_result;
@@ -360,7 +360,7 @@ class utilisateurs
             $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
 
             // stockage de ma requete dans une variable
-            $sql = "SELECT User_Pseudo, User_Photo  
+            $sql = "SELECT * 
         FROM utilisateur 
         WHERE Entreprise_ID = :Entreprise_ID 
         ORDER BY User_ID DESC ";
@@ -441,6 +441,55 @@ class utilisateurs
         }
     }
 
+    /**
+     * méthode pour valider l'utilisateur
+     * 
+     * @param int $User_ID id de l'user
+     * @return bool
+     */
+    public static function validate(int $User_ID): bool
+    {
+        try {
+            $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
+            $sql = "UPDATE `utilisateur` SET `User_Validate` = 1 WHERE `User_ID` = :User_ID";
+            $query = $db->prepare($sql);
+
+            $query->bindValue(':User_ID', $User_ID, PDO::PARAM_INT);
+
+            // on execute la requête
+            $query->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            die();        }
+    }
+
+    /**
+     * méthode pour désactiver l'utilisateur
+     * 
+     * @param int $User_ID id de l'user
+     * @return bool
+     */
+    public static function unvalidate(int $User_ID): bool
+    {
+        try {
+            $db = new PDO("mysql:host=localhost;dbname=" . DBNAME, USERPSEUDO, USERPASSWORD);
+            $sql = "UPDATE `utilisateur` SET `User_Validate` = 0 WHERE `User_ID` = :User_ID";
+            $query = $db->prepare($sql);
+
+            $query->bindValue(':User_ID', $User_ID, PDO::PARAM_INT);
+
+            // on execute la requête
+            $query->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            die();
+        }
+    }
+
 
 }
 
@@ -483,6 +532,7 @@ class trajets
         }
 
     }
+
+
+
 }
-
-
